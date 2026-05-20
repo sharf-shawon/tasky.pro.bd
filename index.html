@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listkeeper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e0d;
+    --surface: #1a1916;
+    --surface2: #222120;
+    --surface3: #2a2927;
+    --border: #333230;
+    --border-light: #3d3c3a;
+    --text: #f0ede8;
+    --text-muted: #8a8680;
+    --text-dim: #5a5854;
+    --accent: #d4843a;
+    --accent-light: #e8a060;
+    --accent-glow: rgba(212,132,58,0.15);
+    --danger: #c0504a;
+    --danger-light: #d4706a;
+    --success: #5a9e6f;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.6);
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+    --transition: 0.18s ease;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { height: 100%; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100%;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 20% 10%, rgba(212,132,58,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 90%, rgba(212,132,58,0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,14,13,0.94);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .logo-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    position: relative;
+    z-index: 1;
+    padding: 14px 28px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 180px;
+    max-width: 340px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    pointer-events: none;
+    display: flex;
+  }
+
+  .search-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px 7px 32px;
+    font-size: 0.8125rem;
+    font-family: var(--font-body);
+    color: var(--text);
+    outline: none;
+    transition: border-color var(--transition);
+  }
+  .search-input::placeholder { color: var(--text-dim); }
+  .search-input:focus { border-color: var(--accent); }
+
+  .toolbar-sep {
+    width: 1px;
+    height: 22px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  .select-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .toolbar-select {
+    appearance: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 28px 7px 10px;
+    font-size: 0.8rem;
+    font-family: var(--font-body);
+    color: var(--text-muted);
+    outline: none;
+    cursor: pointer;
+    transition: border-color var(--transition), color var(--transition);
+  }
+  .toolbar-select:focus, .toolbar-select:hover {
+    border-color: var(--border-light);
+    color: var(--text);
+  }
+
+  .select-arrow {
+    position: absolute;
+    right: 8px;
+    pointer-events: none;
+    color: var(--text-dim);
+    display: flex;
+  }
+
+  .filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 12px;
+    font-size: 0.8rem;
+    font-family: var(--font-body);
+    font-weight: 500;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition);
+    white-space: nowrap;
+  }
+  .filter-btn:hover { border-color: var(--border-light); color: var(--text); }
+  .filter-btn.active {
+    background: var(--accent-glow);
+    border-color: rgba(212,132,58,0.4);
+    color: var(--accent-light);
+  }
+
+  .results-count {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-left: auto;
+    white-space: nowrap;
+    padding-right: 2px;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    padding: 7px 14px;
+    transition: all var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    outline: none;
+  }
+  .btn:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+  .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--surface2); color: var(--text); border-color: var(--border-light); }
+  .btn-accent { background: var(--accent); color: #fff; border: 1px solid transparent; }
+  .btn-accent:hover { background: var(--accent-light); }
+  .btn-danger { background: transparent; color: var(--danger-light); border: 1px solid var(--border); }
+  .btn-danger:hover { background: rgba(192,80,74,0.15); border-color: var(--danger); }
+  .btn-sm { padding: 5px 10px; font-size: 0.75rem; }
+  .btn-icon { padding: 5px; width: 28px; height: 28px; justify-content: center; border-radius: var(--radius-sm); }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    position: relative;
+    z-index: 1;
+    padding: 20px 28px 40px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /* ── MASONRY / RESPONSIVE GRID ── */
+  .lists-grid {
+    columns: 320px;
+    column-gap: 18px;
+  }
+
+  .list-card {
+    break-inside: avoid;
+    display: inline-block; /* needed for column layout to work properly */
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 18px;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    position: relative;
+    animation: fadeInUp 0.22s ease both;
+    vertical-align: top;
+  }
+
+  .list-card.drag-over {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent), var(--shadow);
+  }
+
+  .list-card.hidden-by-filter { display: none; }
+
+  /* ── LIST HEADER ── */
+  .list-header {
+    padding: 14px 14px 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .list-title-wrap { flex: 1; min-width: 0; }
+
+  .list-title {
+    font-family: var(--font-display);
+    font-size: 0.975rem;
+    font-weight: 600;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+    cursor: text;
+    padding: 0;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .list-title::placeholder { color: var(--text-dim); }
+
+  .list-meta {
+    font-size: 0.695rem;
+    color: var(--text-dim);
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .lock-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    color: var(--accent); font-size: 0.67rem;
+  }
+
+  .list-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+    margin-top: -1px;
+  }
+
+  /* ── ITEMS ── */
+  .items-list {
+    padding: 8px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 32px;
+  }
+
+  .item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 9px;
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    cursor: grab;
+    transition: all var(--transition);
+    position: relative;
+    user-select: none;
+  }
+  .item:active { cursor: grabbing; }
+  .item.dragging { opacity: 0.35; border-style: dashed; }
+
+  .item.drag-target-above::before,
+  .item.drag-target-below::after {
+    content: '';
+    position: absolute;
+    left: 6px; right: 6px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 1px;
+  }
+  .item.drag-target-above::before { top: -3px; }
+  .item.drag-target-below::after { bottom: -3px; }
+
+  .item:hover { background: var(--surface3); border-color: var(--border-light); }
+
+  /* highlight matched search text */
+  .item.search-match { border-color: rgba(212,132,58,0.35); }
+  .item.search-no-match { opacity: 0.25; }
+
+  .item-drag-handle {
+    color: var(--text-dim); flex-shrink: 0; margin-top: 2px;
+    opacity: 0; transition: opacity var(--transition); cursor: grab; line-height: 1;
+  }
+  .item:hover .item-drag-handle { opacity: 1; }
+
+  .item-check {
+    flex-shrink: 0;
+    width: 15px; height: 15px;
+    border: 1.5px solid var(--border-light);
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--transition);
+    margin-top: 2px;
+    background: transparent;
+  }
+  .item-check.checked { background: var(--accent); border-color: var(--accent); }
+  .item-check.checked::after {
+    content: '';
+    width: 7px; height: 4px;
+    border-left: 1.5px solid #fff;
+    border-bottom: 1.5px solid #fff;
+    transform: rotate(-45deg) translateY(-1px);
+  }
+
+  .item-text {
+    flex: 1;
+    font-size: 0.845rem;
+    color: var(--text);
+    background: transparent;
+    border: none; outline: none;
+    resize: none;
+    line-height: 1.5;
+    min-height: 20px;
+    font-family: var(--font-body);
+    cursor: text;
+  }
+  .item-text::placeholder { color: var(--text-dim); }
+  .item-text.done { color: var(--text-dim); text-decoration: line-through; text-decoration-color: var(--text-dim); }
+
+  mark.hl {
+    background: rgba(212,132,58,0.3);
+    color: var(--accent-light);
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+
+  .item-delete {
+    flex-shrink: 0;
+    background: transparent; border: none;
+    color: var(--text-dim);
+    cursor: pointer; padding: 0;
+    opacity: 0; transition: all var(--transition);
+    display: flex; align-items: center;
+    margin-top: 2px;
+  }
+  .item:hover .item-delete { opacity: 0.55; }
+  .item-delete:hover { opacity: 1 !important; color: var(--danger-light); }
+
+  /* ── ADD ITEM ── */
+  .add-item-row {
+    padding: 6px 8px 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .add-item-input {
+    flex: 1;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    padding: 6px 9px;
+    font-size: 0.81rem;
+    font-family: var(--font-body);
+    color: var(--text);
+    outline: none;
+    transition: all var(--transition);
+  }
+  .add-item-input::placeholder { color: var(--text-dim); }
+  .add-item-input:focus { background: var(--surface2); border-color: var(--border-light); }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar-wrap {
+    height: 2px;
+    background: var(--border);
+    margin: 0 8px 6px;
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 1px;
+    transition: width 0.3s ease;
+  }
+
+  /* ── ADD LIST CARD ── */
+  .add-list-card {
+    break-inside: avoid;
+    display: inline-flex;
+    width: 100%;
+    vertical-align: top;
+    margin-bottom: 18px;
+    background: transparent;
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 28px 20px;
+    cursor: pointer;
+    transition: all var(--transition);
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    min-height: 90px;
+  }
+  .add-list-card:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+  .add-list-icon { font-size: 1.4rem; opacity: 0.7; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-dim);
+  }
+  .empty-state h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    font-weight: 400;
+  }
+  .empty-state p {
+    font-size: 0.875rem;
+    max-width: 300px;
+    margin: 0 auto 24px;
+    line-height: 1.6;
+  }
+
+  /* no results from search */
+  .no-results {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-dim);
+    font-size: 0.875rem;
+    display: none;
+  }
+  .no-results.visible { display: block; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 26px;
+    width: 100%;
+    max-width: 430px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(10px);
+    transition: transform 0.2s ease;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal h2 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .modal p { font-size: 0.83rem; color: var(--text-muted); margin-bottom: 18px; line-height: 1.5; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+  .field-label {
+    font-size: 0.72rem; font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    display: block;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .field-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 8px 11px;
+    font-size: 0.875rem;
+    font-family: var(--font-body);
+    color: var(--text);
+    outline: none;
+    transition: border-color var(--transition);
+    margin-bottom: 13px;
+  }
+  .field-input:focus { border-color: var(--accent); }
+  .field-input::placeholder { color: var(--text-dim); }
+
+  .toggle-row {
+    display: flex; align-items: center; gap: 9px;
+    margin-bottom: 13px; cursor: pointer;
+  }
+  .toggle-row input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer; }
+  .toggle-label { font-size: 0.8375rem; color: var(--text); cursor: pointer; }
+
+  .share-link-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 11px;
+    font-size: 0.73rem;
+    color: var(--text-muted);
+    word-break: break-all;
+    font-family: monospace;
+    max-height: 78px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 22px; right: 22px;
+    background: var(--surface2);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 9px 15px;
+    font-size: 0.8rem;
+    color: var(--text);
+    box-shadow: var(--shadow);
+    z-index: 2000;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.25s ease;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: var(--success); }
+  .toast.error { border-color: var(--danger); }
+
+  /* ── SHARED VIEW ── */
+  .shared-view { max-width: 500px; margin: 50px auto; padding: 0 20px; }
+
+  .shared-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .shared-card-header {
+    padding: 22px 22px 16px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--surface2), var(--surface));
+  }
+  .shared-card-header h1 {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .shared-items { padding: 14px 22px 22px; display: flex; flex-direction: column; gap: 4px; }
+  .shared-item {
+    display: flex; align-items: flex-start; gap: 9px;
+    padding: 7px 0; border-bottom: 1px solid var(--border);
+    font-size: 0.875rem; color: var(--text);
+  }
+  .shared-item:last-child { border-bottom: none; }
+  .shared-item-check {
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--border-light);
+    border-radius: 3px; flex-shrink: 0; margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .shared-item-check.checked { background: var(--accent); border-color: var(--accent); }
+  .shared-item-check.checked::after {
+    content: '';
+    width: 7px; height: 4px;
+    border-left: 1.5px solid #fff;
+    border-bottom: 1.5px solid #fff;
+    transform: rotate(-45deg) translateY(-1px);
+  }
+  .shared-item-text.done { color: var(--text-dim); text-decoration: line-through; }
+
+  .unlock-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 30px; text-align: center; box-shadow: var(--shadow-lg); }
+  .unlock-icon { font-size: 2.4rem; margin-bottom: 14px; }
+  .unlock-card h2 { font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 7px; font-weight: 600; }
+  .unlock-card p { font-size: 0.84rem; color: var(--text-muted); margin-bottom: 18px; }
+
+  .icon { display: inline-flex; flex-shrink: 0; }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 0 14px; }
+    main { padding: 14px 14px 40px; }
+    .toolbar { padding: 12px 14px 0; }
+    .lists-grid { columns: 1; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="logo-dot"></span>Listkeeper</div>
+  <div class="header-actions" id="headerActions"></div>
+</header>
+
+<div class="toolbar" id="toolbar" style="display:none"></div>
+
+<main id="app"></main>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  CRYPTO
+// ══════════════════════════════════════════════════════
+const Crypto = (() => {
+  const enc = new TextEncoder(), dec = new TextDecoder();
+
+  async function deriveKey(password, salt) {
+    const mat = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt, iterations: 250000, hash: 'SHA-256' },
+      mat, { name: 'AES-GCM', length: 256 }, false, ['encrypt','decrypt']
+    );
+  }
+
+  async function encrypt(text, password) {
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv   = crypto.getRandomValues(new Uint8Array(12));
+    const key  = await deriveKey(password, salt);
+    const ct   = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(text));
+    const buf  = new Uint8Array(salt.length + iv.length + ct.byteLength);
+    buf.set(salt, 0); buf.set(iv, 16); buf.set(new Uint8Array(ct), 28);
+    return btoa(String.fromCharCode(...buf));
+  }
+
+  async function decrypt(b64, password) {
+    try {
+      const buf  = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+      const salt = buf.slice(0, 16), iv = buf.slice(16, 28), ct = buf.slice(28);
+      const key  = await deriveKey(password, salt);
+      const pt   = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+      return dec.decode(pt);
+    } catch { return null; }
+  }
+
+  async function localKey() {
+    const stored = localStorage.getItem('__lk_dk');
+    if (stored) return stored;
+    const raw = crypto.getRandomValues(new Uint8Array(32));
+    const k = btoa(String.fromCharCode(...raw));
+    localStorage.setItem('__lk_dk', k);
+    return k;
+  }
+
+  return { encrypt, decrypt, localKey };
+})();
+
+// ══════════════════════════════════════════════════════
+//  STORAGE
+// ══════════════════════════════════════════════════════
+const Store = (() => {
+  const KEY = '__lk_data';
+  let _dk = null;
+  async function deviceKey() { return _dk || (_dk = await Crypto.localKey()); }
+  async function load() {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return { lists: [] };
+    try {
+      const plain = await Crypto.decrypt(raw, await deviceKey());
+      return plain ? JSON.parse(plain) : { lists: [] };
+    } catch { return { lists: [] }; }
+  }
+  async function save(data) {
+    const ct = await Crypto.encrypt(JSON.stringify(data), await deviceKey());
+    localStorage.setItem(KEY, ct);
+  }
+  return { load, save };
+})();
+
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+let state = { lists: [] };
+let ui = { search: '', sort: 'manual', filter: 'all' };
+
+async function initState() { state = await Store.load(); if (!state.lists) state.lists = []; }
+async function persist() { await Store.save(state); }
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function newList(title='New list') { return { id: uid(), title, items: [], createdAt: Date.now() }; }
+function newItem(text='')          { return { id: uid(), text, done: false }; }
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function toast(msg, type='success', dur=2600) {
+  const el = document.getElementById('toast');
+  el.className = `toast ${type}`;
+  el.innerHTML = (type==='success'?'✓':type==='error'?'✕':'ℹ') + ' ' + msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), dur);
+}
+
+function icon(name) {
+  const icons = {
+    plus:   `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+    trash:  `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>`,
+    share:  `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
+    lock:   `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+    drag:   `<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg>`,
+    copy:   `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`,
+    clone:  `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`,
+    import: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
+    search: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+    chevron:`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`,
+    filter: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>`,
+  };
+  return `<span class="icon">${icons[name]||''}</span>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  DRAG & DROP
+// ══════════════════════════════════════════════════════
+let drag = { active:false, itemId:null, fromListId:null, el:null, ghost:null };
+
+function onItemDragStart(e, itemId, listId) {
+  drag = { active:true, itemId, fromListId:listId, el:e.currentTarget, ghost:null };
+  drag.el.classList.add('dragging');
+  const ghost = document.createElement('div');
+  ghost.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+  document.body.appendChild(ghost);
+  drag.ghost = ghost;
+  e.dataTransfer.setDragImage(ghost, 0, 0);
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function onItemDragEnd() {
+  if (drag.el) drag.el.classList.remove('dragging');
+  drag.ghost?.remove();
+  document.querySelectorAll('.drag-target-above,.drag-target-below').forEach(el => {
+    el.classList.remove('drag-target-above','drag-target-below');
+  });
+  document.querySelectorAll('.list-card.drag-over').forEach(el => el.classList.remove('drag-over'));
+  drag = { active:false, itemId:null, fromListId:null, el:null, ghost:null };
+}
+
+function onListDragOver(e, listId) {
+  if (!drag.active) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('.list-card').forEach(c => c.classList.remove('drag-over'));
+  document.querySelector(`[data-list-id="${listId}"].list-card`)?.classList.add('drag-over');
+}
+
+function onItemDragOver(e, targetItemId) {
+  if (!drag.active) return;
+  e.preventDefault(); e.stopPropagation();
+  const el = document.querySelector(`[data-item-id="${targetItemId}"]`);
+  if (!el || targetItemId === drag.itemId) return;
+  document.querySelectorAll('.drag-target-above,.drag-target-below').forEach(x => {
+    x.classList.remove('drag-target-above','drag-target-below');
+  });
+  const rect = el.getBoundingClientRect();
+  el.classList.add(e.clientY < rect.top + rect.height/2 ? 'drag-target-above' : 'drag-target-below');
+}
+
+function onDropOnItem(e, targetItemId, targetListId) {
+  if (!drag.active) return;
+  e.preventDefault(); e.stopPropagation();
+  const above = document.querySelector(`[data-item-id="${targetItemId}"]`)?.classList.contains('drag-target-above');
+  const srcList = state.lists.find(l => l.id === drag.fromListId);
+  const tgtList = state.lists.find(l => l.id === targetListId);
+  if (!srcList || !tgtList) return;
+  const itemIdx = srcList.items.findIndex(i => i.id === drag.itemId);
+  if (itemIdx === -1) return;
+  const [item] = srcList.items.splice(itemIdx, 1);
+  const tgtIdx = tgtList.items.findIndex(i => i.id === targetItemId);
+  tgtList.items.splice(above ? tgtIdx : tgtIdx+1, 0, item);
+  persist(); render();
+}
+
+function onDropOnList(e, listId) {
+  if (!drag.active) return;
+  e.preventDefault();
+  const srcList = state.lists.find(l => l.id === drag.fromListId);
+  const tgtList = state.lists.find(l => l.id === listId);
+  if (!srcList || !tgtList) return;
+  const itemIdx = srcList.items.findIndex(i => i.id === drag.itemId);
+  if (itemIdx === -1) return;
+  const [item] = srcList.items.splice(itemIdx, 1);
+  tgtList.items.push(item);
+  persist(); render();
+}
+
+// ══════════════════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════════════════
+function openModal(html) {
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+
+// ══════════════════════════════════════════════════════
+//  SHARE
+// ══════════════════════════════════════════════════════
+async function buildShareLink(list, password) {
+  const payload = JSON.stringify({ title: list.title, items: list.items });
+  let encrypted;
+  if (password) {
+    encrypted = await Crypto.encrypt(payload, password);
+  } else {
+    encrypted = btoa(unescape(encodeURIComponent(payload)));
+  }
+  const flag = password ? '1' : '0';
+  const urlSafe = (flag + encrypted).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+  const base = window.location.href.split('?')[0].split('#')[0];
+  return `${base}?share=${encodeURIComponent(urlSafe)}`;
+}
+
+async function openShareModal(listId) {
+  const list = state.lists.find(l => l.id === listId);
+  if (!list) return;
+  openModal(`
+    <h2>${icon('share')} Share "${escHtml(list.title)}"</h2>
+    <p>Generate a shareable link. Password protection encrypts the list — it cannot be read without the correct password.</p>
+    <label class="toggle-row" for="sharePwToggle">
+      <input type="checkbox" id="sharePwToggle">
+      <span class="toggle-label">Protect with a password</span>
+    </label>
+    <div id="pwFields" style="display:none;">
+      <label class="field-label">Password</label>
+      <input class="field-input" type="password" id="sharePw" placeholder="Enter a password…" autocomplete="new-password">
+    </div>
+    <div id="shareLinkWrap" style="display:none;">
+      <label class="field-label">Share link</label>
+      <div class="share-link-box" id="shareLinkBox"></div>
+      <button class="btn btn-ghost btn-sm" onclick="copyShareLink()">${icon('copy')} Copy link</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-accent" id="generateBtn" onclick="generateLink('${listId}')">${icon('share')} Generate link</button>
+    </div>
+  `);
+  document.getElementById('sharePwToggle').addEventListener('change', e => {
+    document.getElementById('pwFields').style.display = e.target.checked ? 'block' : 'none';
+  });
+}
+
+async function generateLink(listId) {
+  const list = state.lists.find(l => l.id === listId);
+  if (!list) return;
+  const usePw = document.getElementById('sharePwToggle').checked;
+  const pw = usePw ? document.getElementById('sharePw').value.trim() : '';
+  if (usePw && !pw) { toast('Please enter a password.', 'error'); document.getElementById('sharePw').focus(); return; }
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true; btn.textContent = 'Generating…';
+  try {
+    const link = await buildShareLink(list, pw||null);
+    document.getElementById('shareLinkWrap').style.display = 'block';
+    document.getElementById('shareLinkBox').textContent = link;
+    window._currentShareLink = link;
+    btn.style.display = 'none';
+  } catch { toast('Failed to generate link.', 'error'); btn.disabled=false; btn.innerHTML=icon('share')+' Generate link'; }
+}
+
+function copyShareLink() {
+  if (!window._currentShareLink) return;
+  navigator.clipboard.writeText(window._currentShareLink)
+    .then(() => toast('Link copied!'))
+    .catch(() => toast('Could not copy — copy manually.','error'));
+}
+
+// ══════════════════════════════════════════════════════
+//  SHARED VIEW
+// ══════════════════════════════════════════════════════
+function getShareParam() { return new URLSearchParams(window.location.search).get('share'); }
+
+async function renderSharedView(shareParam) {
+  const app = document.getElementById('app');
+  document.getElementById('headerActions').innerHTML = `<a href="${location.pathname}" class="btn btn-ghost btn-sm">← Back</a>`;
+  document.getElementById('toolbar').style.display = 'none';
+  const raw = decodeURIComponent(shareParam).replace(/-/g,'+').replace(/_/g,'/');
+  const flag = raw[0], data = raw.slice(1);
+  if (flag !== '1') {
+    try {
+      const payload = JSON.parse(decodeURIComponent(escape(atob(data))));
+      renderSharedList(app, payload, false);
+    } catch { app.innerHTML = `<div class="shared-view"><div class="unlock-card"><div class="unlock-icon">⚠️</div><h2>Invalid link</h2><p>This link appears broken.</p></div></div>`; }
+  } else {
+    renderPasswordPrompt(app, data);
+  }
+}
+
+function renderPasswordPrompt(app, encData) {
+  app.innerHTML = `
+    <div class="shared-view">
+      <div class="unlock-card">
+        <div class="unlock-icon">🔐</div>
+        <h2>Password protected</h2>
+        <p>This list is encrypted. Enter the password to view it.</p>
+        <input class="field-input" type="password" id="unlockPw" placeholder="Enter password…" style="text-align:center;" autocomplete="current-password">
+        <div style="display:flex;justify-content:center;margin-top:4px;">
+          <button class="btn btn-accent" id="unlockBtn" onclick="attemptUnlock()">Unlock list</button>
+        </div>
+        <div id="unlockErr" style="display:none;color:var(--danger-light);font-size:0.8rem;margin-top:12px;">Incorrect password.</div>
+      </div>
+    </div>
+  `;
+  window._pendingEncData = encData;
+  document.getElementById('unlockPw').addEventListener('keydown', e => { if (e.key==='Enter') attemptUnlock(); });
+  setTimeout(() => document.getElementById('unlockPw')?.focus(), 100);
+}
+
+async function attemptUnlock() {
+  const pw = document.getElementById('unlockPw').value;
+  const btn = document.getElementById('unlockBtn');
+  if (!pw) return;
+  btn.disabled=true; btn.textContent='Decrypting…';
+  const plain = await Crypto.decrypt(window._pendingEncData, pw);
+  if (!plain) {
+    document.getElementById('unlockErr').style.display = 'block';
+    btn.disabled=false; btn.textContent='Unlock list';
+    document.getElementById('unlockPw').select();
+    return;
+  }
+  renderSharedList(document.getElementById('app'), JSON.parse(plain), true);
+}
+
+function renderSharedList(container, payload, wasProtected) {
+  const { title, items } = payload;
+  const done = items.filter(i=>i.done).length;
+  container.innerHTML = `
+    <div class="shared-view">
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px;">Viewing shared list${wasProtected?' · 🔐 password protected':''}</p>
+      <div class="shared-card">
+        <div class="shared-card-header">
+          <h1>${escHtml(title)}</h1>
+          <div style="font-size:0.76rem;color:var(--text-dim);margin-top:3px;">${items.length} item${items.length!==1?'s':''} · ${done} completed</div>
+        </div>
+        <div class="shared-items">
+          ${items.length===0 ? '<div style="color:var(--text-dim);font-size:0.85rem;">This list is empty.</div>' :
+            items.map(item=>`
+              <div class="shared-item">
+                <div class="shared-item-check ${item.done?'checked':''}"></div>
+                <span class="shared-item-text ${item.done?'done':''}">${escHtml(item.text||'(empty)')}</span>
+              </div>
+            `).join('')}
+        </div>
+      </div>
+      <div style="margin-top:14px;">
+        <button class="btn btn-accent" onclick='importSharedList(${JSON.stringify(JSON.stringify(payload))})'>${icon('import')} Import to my lists</button>
+      </div>
+    </div>
+  `;
+}
+
+async function importSharedList(payloadJson) {
+  const payload = JSON.parse(payloadJson);
+  const list = newList(payload.title);
+  list.items = payload.items.map(i => ({ ...newItem(i.text), done: i.done }));
+  state.lists.push(list);
+  await persist();
+  toast('List imported!');
+  window.location.href = location.pathname;
+}
+
+// ══════════════════════════════════════════════════════
+//  SEARCH / SORT / FILTER LOGIC
+// ══════════════════════════════════════════════════════
+function getVisibleLists() {
+  let lists = [...state.lists];
+
+  // Filter
+  if (ui.filter === 'has-incomplete') lists = lists.filter(l => l.items.some(i => !i.done));
+  if (ui.filter === 'all-done')       lists = lists.filter(l => l.items.length > 0 && l.items.every(i => i.done));
+  if (ui.filter === 'empty')          lists = lists.filter(l => l.items.length === 0);
+
+  // Sort
+  if (ui.sort === 'alpha-az')  lists.sort((a,b) => a.title.localeCompare(b.title));
+  if (ui.sort === 'alpha-za')  lists.sort((a,b) => b.title.localeCompare(a.title));
+  if (ui.sort === 'newest')    lists.sort((a,b) => b.createdAt - a.createdAt);
+  if (ui.sort === 'oldest')    lists.sort((a,b) => a.createdAt - b.createdAt);
+  if (ui.sort === 'most-items')  lists.sort((a,b) => b.items.length - a.items.length);
+  if (ui.sort === 'most-done')   lists.sort((a,b) => {
+    const pa = a.items.length ? a.items.filter(i=>i.done).length/a.items.length : 0;
+    const pb = b.items.length ? b.items.filter(i=>i.done).length/b.items.length : 0;
+    return pb - pa;
+  });
+
+  // Search: filter items within each list, mark lists with matches
+  const q = ui.search.trim().toLowerCase();
+  if (q) {
+    lists = lists.map(list => {
+      const titleMatch = list.title.toLowerCase().includes(q);
+      const matchedItems = list.items.filter(i => i.text.toLowerCase().includes(q));
+      if (titleMatch || matchedItems.length > 0) {
+        return { ...list, _searchQ: q, _titleMatch: titleMatch, _matchedItemIds: new Set(matchedItems.map(i=>i.id)) };
+      }
+      return null;
+    }).filter(Boolean);
+  }
+
+  return lists;
+}
+
+function highlightText(text, q) {
+  if (!q) return escHtml(text);
+  const escaped = escHtml(text);
+  const escapedQ = q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return escaped.replace(new RegExp(`(${escapedQ})`, 'gi'), '<mark class="hl">$1</mark>');
+}
+
+// ══════════════════════════════════════════════════════
+//  TOOLBAR RENDER
+// ══════════════════════════════════════════════════════
+function renderToolbar() {
+  const tb = document.getElementById('toolbar');
+  const hasLists = state.lists.length > 0;
+  if (!hasLists) { tb.style.display = 'none'; return; }
+  tb.style.display = 'flex';
+
+  const activeFilter = ui.filter !== 'all';
+
+  tb.innerHTML = `
+    <div class="search-wrap">
+      <span class="search-icon">${icon('search')}</span>
+      <input class="search-input" placeholder="Search lists &amp; tasks…" value="${escHtml(ui.search)}" id="searchInput" oninput="onSearch(this.value)">
+    </div>
+
+    <div class="toolbar-sep"></div>
+
+    <div class="select-wrap">
+      <select class="toolbar-select" id="sortSelect" onchange="onSort(this.value)">
+        <option value="manual"     ${ui.sort==='manual'    ?'selected':''}>Sort: Default</option>
+        <option value="alpha-az"   ${ui.sort==='alpha-az'  ?'selected':''}>A → Z</option>
+        <option value="alpha-za"   ${ui.sort==='alpha-za'  ?'selected':''}>Z → A</option>
+        <option value="newest"     ${ui.sort==='newest'    ?'selected':''}>Newest first</option>
+        <option value="oldest"     ${ui.sort==='oldest'    ?'selected':''}>Oldest first</option>
+        <option value="most-items" ${ui.sort==='most-items'?'selected':''}>Most items</option>
+        <option value="most-done"  ${ui.sort==='most-done' ?'selected':''}>Most complete</option>
+      </select>
+      <span class="select-arrow">${icon('chevron')}</span>
+    </div>
+
+    <button class="filter-btn ${activeFilter?'active':''}" onclick="cycleFilter()">
+      ${icon('filter')}
+      ${ui.filter==='all'?'All lists':ui.filter==='has-incomplete'?'Has open tasks':ui.filter==='all-done'?'Completed':'Empty'}
+    </button>
+
+    <span class="results-count" id="resultsCount"></span>
+  `;
+}
+
+function onSearch(val) {
+  ui.search = val;
+  renderLists();
+  updateResultsCount();
+}
+
+function onSort(val) {
+  ui.sort = val;
+  renderLists();
+}
+
+const filterCycle = ['all','has-incomplete','all-done','empty'];
+function cycleFilter() {
+  const idx = filterCycle.indexOf(ui.filter);
+  ui.filter = filterCycle[(idx+1) % filterCycle.length];
+  renderToolbar();
+  renderLists();
+}
+
+function updateResultsCount() {
+  const el = document.getElementById('resultsCount');
+  if (!el) return;
+  const visible = getVisibleLists();
+  const q = ui.search.trim();
+  if (q) el.textContent = `${visible.length} list${visible.length!==1?'s':''} matched`;
+  else el.textContent = '';
+}
+
+// ══════════════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════════════
+function render() {
+  renderToolbar();
+  renderMainView();
+}
+
+function renderMainView() {
+  const app = document.getElementById('app');
+  const header = document.getElementById('headerActions');
+
+  header.innerHTML = `<button class="btn btn-accent btn-sm" onclick="addList()">${icon('plus')} New list</button>`;
+
+  if (state.lists.length === 0) {
+    app.innerHTML = `
+      <div class="empty-state">
+        <h2>No lists yet.</h2>
+        <p>Create your first list to start organizing your thoughts.</p>
+        <button class="btn btn-accent" onclick="addList()">${icon('plus')} Create a list</button>
+      </div>
+    `;
+    return;
+  }
+
+  renderLists();
+}
+
+function renderLists() {
+  const app = document.getElementById('app');
+  const visible = getVisibleLists();
+  const q = ui.search.trim().toLowerCase();
+
+  // Build or reuse grid
+  let grid = document.getElementById('listsGrid');
+  if (!grid) {
+    app.innerHTML = `<div class="lists-grid" id="listsGrid"></div><div class="no-results" id="noResults">No lists match your search.</div>`;
+    grid = document.getElementById('listsGrid');
+  }
+
+  grid.innerHTML = '';
+
+  if (visible.length === 0) {
+    document.getElementById('noResults').classList.add('visible');
+  } else {
+    document.getElementById('noResults')?.classList.remove('visible');
+  }
+
+  visible.forEach(list => {
+    const card = document.createElement('div');
+    card.className = 'list-card';
+    card.dataset.listId = list.id;
+
+    const total = list.items.length;
+    const done  = list.items.filter(i=>i.done).length;
+    const pct   = total ? Math.round((done/total)*100) : 0;
+
+    const titleHtml = list._titleMatch ? highlightText(list.title, list._searchQ) : escHtml(list.title);
+
+    card.innerHTML = `
+      <div class="list-header">
+        <div class="list-title-wrap">
+          <input
+            class="list-title"
+            value="${escHtml(list.title)}"
+            placeholder="List name…"
+            data-list-id="${list.id}"
+            onchange="updateListTitle('${list.id}',this.value)"
+            spellcheck="false"
+          >
+          <div class="list-meta">
+            ${total} item${total!==1?'s':''} · ${done} done
+            ${pct===100 && total>0 ? '· <span style="color:var(--success)">✓ all done</span>' : ''}
+          </div>
+        </div>
+        <div class="list-actions">
+          <button class="btn btn-ghost btn-icon" title="Clone list" onclick="cloneList('${list.id}')">${icon('clone')}</button>
+          <button class="btn btn-ghost btn-icon" title="Share list" onclick="openShareModal('${list.id}')">${icon('share')}</button>
+          <button class="btn btn-danger btn-icon" title="Delete list" onclick="confirmDeleteList('${list.id}')">${icon('trash')}</button>
+        </div>
+      </div>
+      ${total>0 ? `<div class="progress-bar-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>` : ''}
+      <div
+        class="items-list"
+        data-list-id="${list.id}"
+        ondragover="onListDragOver(event,'${list.id}')"
+        ondrop="onDropOnList(event,'${list.id}')"
+        ondragleave="document.querySelectorAll('.list-card.drag-over').forEach(c=>c.classList.remove('drag-over'))"
+      >
+        ${list.items.map(item => renderItem(item, list.id, list._searchQ, list._matchedItemIds)).join('')}
+      </div>
+      <div class="add-item-row">
+        <input
+          class="add-item-input"
+          placeholder="+ Add item…"
+          data-list-id="${list.id}"
+          onkeydown="onAddItemKey(event,'${list.id}')"
+        >
+      </div>
+    `;
+
+    // Highlight title display (input can't render HTML, so we leave value as plain text)
+    grid.appendChild(card);
+  });
+
+  // Add list button (only when not searching)
+  if (!q) {
+    const addCard = document.createElement('div');
+    addCard.className = 'add-list-card';
+    addCard.innerHTML = `<div class="add-list-icon">+</div><span>New list</span>`;
+    addCard.onclick = addList;
+    grid.appendChild(addCard);
+  }
+
+  requestAnimationFrame(initTextareas);
+  updateResultsCount();
+}
+
+function renderItem(item, listId, searchQ, matchedIds) {
+  const isMatch  = matchedIds && matchedIds.has(item.id);
+  const noMatch  = searchQ && matchedIds && !matchedIds.has(item.id);
+  const textHtml = searchQ && isMatch ? highlightText(item.text, searchQ) : escHtml(item.text);
+  const classes  = ['item', item.done?'done-item':'', isMatch?'search-match':'', noMatch?'search-no-match':''].filter(Boolean).join(' ');
+
+  return `
+    <div
+      class="${classes}"
+      data-item-id="${item.id}"
+      data-list-id="${listId}"
+      draggable="true"
+      ondragstart="onItemDragStart(event,'${item.id}','${listId}')"
+      ondragend="onItemDragEnd()"
+      ondragover="onItemDragOver(event,'${item.id}')"
+      ondrop="onDropOnItem(event,'${item.id}','${listId}')"
+    >
+      <span class="item-drag-handle">${icon('drag')}</span>
+      <div class="item-check ${item.done?'checked':''}" onclick="toggleItem('${listId}','${item.id}')"></div>
+      <textarea
+        class="item-text ${item.done?'done':''}"
+        rows="1"
+        data-item-id="${item.id}"
+        onchange="updateItemText('${listId}','${item.id}',this.value)"
+        oninput="autoResizeTextarea(this)"
+        onkeydown="onItemTextKey(event,'${listId}','${item.id}')"
+        spellcheck="true"
+      >${escHtml(item.text)}</textarea>
+      <button class="item-delete" onclick="deleteItem('${listId}','${item.id}')" title="Delete">${icon('trash')}</button>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════
+//  ACTIONS
+// ══════════════════════════════════════════════════════
+async function addList() {
+  const list = newList('New list');
+  state.lists.push(list);
+  await persist();
+  render();
+  requestAnimationFrame(() => {
+    const inputs = document.querySelectorAll('.list-title');
+    const last = inputs[inputs.length - 1];
+    // skip the add-list card
+    if (last) { last.focus(); last.select(); }
+  });
+}
+
+async function cloneList(listId) {
+  const src = state.lists.find(l => l.id === listId);
+  if (!src) return;
+  const clone = {
+    id: uid(),
+    title: src.title + ' (copy)',
+    items: src.items.map(i => ({ ...i, id: uid() })),
+    createdAt: Date.now(),
+  };
+  // Insert right after original
+  const idx = state.lists.findIndex(l => l.id === listId);
+  state.lists.splice(idx + 1, 0, clone);
+  await persist();
+  render();
+  toast('List cloned.');
+}
+
+async function updateListTitle(listId, value) {
+  const list = state.lists.find(l => l.id === listId);
+  if (list) { list.title = value.trim() || 'Untitled'; await persist(); }
+}
+
+function confirmDeleteList(listId) {
+  const list = state.lists.find(l => l.id === listId);
+  if (!list) return;
+  openModal(`
+    <h2>Delete "${escHtml(list.title)}"?</h2>
+    <p>This will permanently remove the list and all ${list.items.length} item${list.items.length!==1?'s':''} inside it.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="deleteList('${listId}')">Delete</button>
+    </div>
+  `);
+}
+
+async function deleteList(listId) {
+  state.lists = state.lists.filter(l => l.id !== listId);
+  await persist(); closeModal(); render();
+  toast('List deleted.');
+}
+
+async function addItem(listId, text) {
+  const list = state.lists.find(l => l.id === listId);
+  if (!list) return;
+  list.items.push(newItem(text.trim()));
+  await persist();
+  renderLists();
+  requestAnimationFrame(() => {
+    document.querySelector(`.add-item-input[data-list-id="${listId}"]`)?.focus();
+  });
+}
+
+function onAddItemKey(e, listId) {
+  if (e.key === 'Enter') {
+    const val = e.target.value.trim();
+    if (val) addItem(listId, val);
+    e.target.value = '';
+    e.preventDefault();
+  }
+}
+
+function onItemTextKey(e, listId, itemId) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.target.blur(); e.preventDefault();
+    document.querySelector(`.add-item-input[data-list-id="${listId}"]`)?.focus();
+  }
+  if (e.key === 'Backspace' && e.target.value === '') {
+    deleteItem(listId, itemId); e.preventDefault();
+  }
+}
+
+async function updateItemText(listId, itemId, value) {
+  const list = state.lists.find(l => l.id === listId);
+  const item = list?.items.find(i => i.id === itemId);
+  if (item) { item.text = value; await persist(); }
+}
+
+async function toggleItem(listId, itemId) {
+  const list = state.lists.find(l => l.id === listId);
+  const item = list?.items.find(i => i.id === itemId);
+  if (!item) return;
+  item.done = !item.done;
+  await persist();
+  // Lightweight DOM update
+  const el = document.querySelector(`[data-item-id="${itemId}"]`);
+  if (el) {
+    el.querySelector('.item-check').classList.toggle('checked', item.done);
+    el.querySelector('.item-text').classList.toggle('done', item.done);
+  }
+  // Update progress + meta on card
+  const card = document.querySelector(`[data-list-id="${listId}"].list-card`);
+  if (card) {
+    const doneCount = list.items.filter(i=>i.done).length;
+    const total = list.items.length;
+    const pct = total ? Math.round((doneCount/total)*100) : 0;
+    let bar = card.querySelector('.progress-bar');
+    if (!bar && total > 0) {
+      const wrap = document.createElement('div');
+      wrap.className = 'progress-bar-wrap';
+      wrap.innerHTML = `<div class="progress-bar" style="width:${pct}%"></div>`;
+      card.querySelector('.list-header').after(wrap);
+      bar = wrap.querySelector('.progress-bar');
+    } else if (bar) { bar.style.width = pct+'%'; }
+    const meta = card.querySelector('.list-meta');
+    if (meta) meta.innerHTML = `${total} item${total!==1?'s':''} · ${doneCount} done${pct===100&&total>0?' · <span style="color:var(--success)">✓ all done</span>':''}`;
+  }
+}
+
+async function deleteItem(listId, itemId) {
+  const list = state.lists.find(l => l.id === listId);
+  if (!list) return;
+  list.items = list.items.filter(i => i.id !== itemId);
+  await persist();
+  renderLists();
+}
+
+function autoResizeTextarea(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = ta.scrollHeight + 'px';
+}
+
+function initTextareas() {
+  document.querySelectorAll('.item-text').forEach(ta => {
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════════════
+(async () => {
+  const shareParam = getShareParam();
+  if (shareParam) {
+    await renderSharedView(shareParam);
+  } else {
+    await initState();
+    render();
+  }
+})();
+</script>
+</body>
+</html>
