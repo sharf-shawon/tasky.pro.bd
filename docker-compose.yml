@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  tasky:
+    build: .
+    container_name: tasky
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    # Labels for Coolify / Traefik
+    labels:
+      - "coolify.managed=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.tasky.rule=Host(`${DOMAIN:-localhost}`)"
+      - "traefik.http.routers.tasky.entrypoints=websecure"
+      - "traefik.http.routers.tasky.tls.certresolver=letsencrypt"

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — Tasky Private Task Management</title>
+<meta name="description" content="Frequently Asked Questions about Tasky, the secure, local-first task manager. Learn about our encryption, privacy, and features.">
+
+<!-- OpenGraph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tasky.pro.bd/faq.html">
+<meta property="og:title" content="FAQ — Tasky Private Task Management">
+<meta property="og:description" content="Frequently Asked Questions about Tasky, the secure, local-first task manager. Learn about our encryption, privacy, and features.">
+
+<!-- Icons & Favicons -->
+<link rel="apple-touch-icon" sizes="57x57" href="icons/apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="icons/apple-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="icons/apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="icons/apple-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="icons/apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="icons/apple-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="icons/apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/apple-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192"  href="icons/android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+<link rel="manifest" href="manifest.json">
+<meta name="msapplication-TileColor" content="#0f0e0d">
+<meta name="msapplication-TileImage" content="icons/ms-icon-144x144.png">
+<meta name="theme-color" content="#0f0e0d">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e0d;
+    --surface: #1a1916;
+    --surface2: #222120;
+    --border: #333230;
+    --text: #f0ede8;
+    --text-muted: #8a8680;
+    --accent: #d4843a;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+  }
+
+  header {
+    background: rgba(15,14,13,0.94);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+
+  .container {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 0 28px;
+  }
+
+  h1 { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 40px; }
+  h2 { font-family: var(--font-display); font-size: 1.5rem; margin-top: 40px; color: var(--accent); }
+  
+  .faq-item { margin-bottom: 30px; }
+  .faq-q { font-weight: 500; font-size: 1.1rem; margin-bottom: 10px; display: block; }
+  .faq-a { color: var(--text-muted); font-size: 0.95rem; }
+
+  footer {
+    text-align: center;
+    padding: 40px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .btn {
+    background: var(--accent);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="logo-dot"></span>Tasky</div>
+  <a href="index.html" class="btn">Back to App</a>
+</header>
+
+<div class="container">
+  <h1>Frequently Asked Questions</h1>
+
+  <div class="faq-item">
+    <span class="faq-q">Where is my data stored?</span>
+    <p class="faq-a">Your data never leaves your machine. Tasky is a "local-first" application, meaning all your lists and tasks are stored directly in your browser's local storage. We do not have a server, and we cannot see your tasks.</p>
+  </div>
+
+  <div class="faq-item">
+    <span class="faq-q">Is my data secure?</span>
+    <p class="faq-a">Yes. All data stored in your browser is encrypted using <strong>AES-GCM (256-bit)</strong> encryption. We use the Web Crypto API to derive a unique device key that stays on your computer. Even if someone gained access to your browser's files, your tasks remain unreadable without the key.</p>
+  </div>
+
+  <div class="faq-item">
+    <span class="faq-q">How does sharing work?</span>
+    <p class="faq-a">When you share a list, Tasky generates a unique link containing the encrypted data of that list. You can optionally protect this link with a password. If you use a password, the data is encrypted again using that password (PBKDF2) before being added to the URL. The recipient needs the link (and the password, if set) to decrypt and import the list.</p>
+  </div>
+
+  <div class="faq-item">
+    <span class="faq-q">What are the core features?</span>
+    <ul class="faq-a">
+      <li>Create multiple task lists.</li>
+      <li>Drag and drop items within or between lists.</li>
+      <li>Client-side encryption for everything.</li>
+      <li>Secure list sharing via URL or QR Code.</li>
+      <li>Multiple themes (Dark, Light, Cyberpunk, etc.).</li>
+      <li>Personalized colors for every list.</li>
+      <li>Full data backup (JSON or Encrypted).</li>
+    </ul>
+  </div>
+
+  <div class="faq-item">
+    <span class="faq-q">Is Tasky free?</span>
+    <p class="faq-a">Yes. Tasky is an open-source tool and is completely free to use. You can even self-host it yourself using our Docker setup.</p>
+  </div>
+
+</div>
+
+<footer>
+  &copy; 2026 Tasky. Built for privacy.
+</footer>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
+
+</body>
+</html>

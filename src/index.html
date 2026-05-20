@@ -3,8 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tasky</title>
+<title>Tasky — Private, Encrypted, Local-First Task Management</title>
+<meta name="description" content="Tasky is a secure, privacy-focused todo list that encrypts your data locally. No servers, no tracking, just your tasks.">
+<meta name="keywords" content="todo list, task manager, encrypted tasks, privacy, local-first, AES-GCM, secure notes">
+<meta name="author" content="Tasky Team">
+
+<!-- OpenGraph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tasky.pro.bd/">
+<meta property="og:title" content="Tasky — Private, Encrypted, Local-First Task Management">
+<meta property="og:description" content="A secure, privacy-focused todo list that encrypts your data locally. No servers, no tracking, just your tasks.">
+<meta property="og:image" content="https://tasky.pro.bd/icons/android-icon-192x192.png">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://tasky.pro.bd/">
+<meta property="twitter:title" content="Tasky — Private, Encrypted, Local-First Task Management">
+<meta property="twitter:description" content="A secure, privacy-focused todo list that encrypts your data locally. No servers, no tracking, just your tasks.">
+<link property="twitter:image" content="https://tasky.pro.bd/icons/android-icon-192x192.png">
+
+<!-- Icons & Favicons -->
+<link rel="apple-touch-icon" sizes="57x57" href="icons/apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="icons/apple-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="icons/apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="icons/apple-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="icons/apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="icons/apple-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="icons/apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/apple-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192"  href="icons/android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+<link rel="manifest" href="manifest.json">
+<meta name="msapplication-TileColor" content="#0f0e0d">
+<meta name="msapplication-TileImage" content="icons/ms-icon-144x144.png">
+<meta name="theme-color" content="#0f0e0d">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
+
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 <style>
@@ -1117,6 +1164,12 @@ function openSettings() {
       </div>
       <input type="file" id="importFile" style="display:none" onchange="handleImport(event)">
     </div>
+    <div class="settings-section">
+      <label class="field-label">Help & Support</label>
+      <div class="settings-actions">
+        <a href="faq.html" class="btn btn-ghost btn-sm" target="_blank">${icon('chevron')} View FAQ</a>
+      </div>
+    </div>
     <div class="modal-actions">
       <button class="btn btn-accent" onclick="closeModal()">Done</button>
     </div>
@@ -1861,6 +1914,13 @@ function initTextareas() {
   } else {
     await initState();
     render();
+  }
+
+  // Register Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
   }
 })();
 </script>

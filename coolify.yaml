@@ -1,0 +1,13 @@
+name: Tasky
+description: Private, Encrypted, Local-First Task Management
+repository: https://github.com/mshawon/tasky.pro.bd
+documentation: https://tasky.pro.bd/faq.html
+icon: https://tasky.pro.bd/icons/android-icon-192x192.png
+compose:
+  services:
+    tasky:
+      image: nginx:alpine
+      volumes:
+        - ./src:/usr/share/nginx/html
+      ports:
+        - "80:80"
