@@ -1,0 +1,27 @@
+schema: spec-driven
+
+# Project context
+# This is shown to AI when creating artifacts.
+context: |
+  Tech stack: Vanilla JavaScript, HTML5, CSS3.
+  Architecture: Single-file application (SPA-like) with all logic in src/index.html.
+  Core Domain: Encrypted task/list management.
+  Key Features:
+    - Client-side encryption at rest (AES-GCM).
+    - Encrypted sharing via URL parameters.
+    - Drag-and-drop task reordering.
+    - Local persistence using localStorage.
+  Conventions:
+    - Clean, modern dark UI.
+    - Component-based structure within the script tag (Crypto, Store, State, UI).
+    - Minimal external dependencies (Google Fonts).
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
